@@ -1,8 +1,8 @@
 import numpy as np
 from utils import *
 from PCS_filter import PCS_FIR_filter
-from PCS_coeffs_generate import OUTDIR
 
+OUTDIR = 'generated_freq_response'
 PCS_FIR_Filter = PCS_FIR_filter(coeffs_path=os.path.join(OUTDIR,'PCS_coeffs.npy'))
 
 def test(audio_path=None):

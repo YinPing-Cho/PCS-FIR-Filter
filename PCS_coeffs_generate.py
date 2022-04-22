@@ -75,6 +75,8 @@ def plot_fir_response(w, h):
     plt.axis('tight')
     plt.savefig(os.path.join(OUTDIR,'PCS_coeffs_freqz.png'))
     plt.show()
+    ax1.clear()
+    ax2.clear()
 
 PCS_curve, PCS_params = init_PCS_params()
 

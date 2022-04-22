@@ -49,3 +49,4 @@ def plot_before_after_spectra(audio_before, audio_after):
     plt.title('Before and After spectra')
     plt.legend(loc='best')
     plt.show()
+    plt.close()
