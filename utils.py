@@ -29,7 +29,7 @@ def onesided_spectrum(x):
     x = x[:x.size(-1)//2]
     return 20 * torch.log10(x)
 
-def plot_before_after_spectra(audio_before, audio_after):
+def plot_before_after_spectra(audio_before, audio_after, min_max=None):
     audio_before = audio_before.squeeze()
     audio_after = audio_after.squeeze()
 
@@ -46,6 +46,11 @@ def plot_before_after_spectra(audio_before, audio_after):
     plt.plot(t, spectrum_after, 'r', label='after')
     plt.xlabel('Nyquist Frequency')
     plt.ylabel('Decibel (dB)')
+
+    if min_max is not None:
+        ax = plt.gca()
+        ax.set_ylim(min_max)
+        
     plt.title('Before and After spectra')
     plt.legend(loc='best')
     plt.show()

@@ -12,7 +12,8 @@ def test(audio_path=None):
         sr=22050
         audio = generate_noise(22050*10)
     filtered_audio = PCS_FIR_Filter(audio)
-    plot_before_after_spectra(audio, filtered_audio)
+    plot_before_after_spectra(audio, filtered_audio, min_max=[-120, 120])
     dump_audio_samples(filtered_audio, sampling_rate=sr, output_dir='audio_PCSed')
 
+#test(audio_path=None)
 test(audio_path='audio_original/f1_001_7.wav')

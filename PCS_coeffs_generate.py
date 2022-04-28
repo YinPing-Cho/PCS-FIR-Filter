@@ -39,7 +39,10 @@ def get_multiband_filter(PCS_params, numtaps):
     for _, params in PCS_params.items():
         bands.extend(params['band'])
         gains.append(np.exp(params['gain']))
-    gains = gains / min(gains)
+
+    min_gain = min(gains)
+    for idx in range(len(gains)):
+        gains[idx] = gains[idx] / min_gain
 
     desired = []
     for idx in range(len(gains)):
