@@ -16,29 +16,19 @@ class PCS_FIR_filter(nn.Module):
         for param in self.FIR_filter.parameters():
             param.requires_grad = False
 
-        #self.thresh = 0.1
-        #self.ratio = 0.75
-        #self.offset1 = self.thresh * (1-self.ratio)
-        #self.offset2 = self.thresh * (1-1/self.ratio)
         self.gain = 10
         self.offset = 1.0
     
     def wave_compress(self, x):
         x_sign = torch.sign(x)
         x_abs = torch.abs(x)
-        #new_x = x.clone()
 
-        #new_x[x_abs>self.thresh] = x_abs[x_abs>self.thresh]*self.ratio + self.offset1
-        #new_x[x_abs>self.thresh] = new_x[x_abs>self.thresh] * x_sign[x_abs>self.thresh]
         return torch.log(x_abs * self.gain + self.offset) * x_sign
     
     def wave_decompress(self, x):
         x_sign = torch.sign(x)
         x_abs = torch.abs(x)
-        #new_x = x.clone()
 
-        #new_x[x_abs>self.thresh] = x_abs[x_abs>self.thresh]/self.ratio + self.offset2
-        #new_x[x_abs>self.thresh] = new_x[x_abs>self.thresh] * x_sign[x_abs>self.thresh]
         return (torch.exp(x_abs)-self.offset) / self.gain * x_sign
 
     def forward(self, x):
