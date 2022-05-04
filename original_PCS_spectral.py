@@ -56,5 +56,5 @@ def test(audio_path=None):
     plot_before_after_spectra(audio, filtered_audio, min_max=[-60, 100])
     dump_audio_samples(filtered_audio, sampling_rate=sr, output_dir='roychao_audio_PCSed')
 
-test(audio_path=None)
+#test(audio_path=None)
 #test(audio_path='audio_original/f1_001_7.wav')

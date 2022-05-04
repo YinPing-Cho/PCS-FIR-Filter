@@ -42,7 +42,7 @@ class PCS_FIR_filter(nn.Module):
         if len(list(x.size())) == 2:
             x = x.unsqueeze(1)
         assert len(list(x.size())) <= 3, 'Pass with dimension: B*1*L, given {}'.format(x.size())
-        x = self.wave_compress(x)
+        #x = self.wave_compress(x)
         x = self.FIR_filter(x)
-        x = self.wave_decompress(x)
+        #x = self.wave_decompress(x)
         return x.squeeze(1)
