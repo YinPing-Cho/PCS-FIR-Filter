@@ -103,7 +103,7 @@ def load_and_filter(audio_path=None):
     filtered_audio = process_wav(audio)
     audio = torch.FloatTensor(audio)
     filtered_audio = torch.FloatTensor(filtered_audio)
-    return audio, filtered_audio
+    return audio.squeeze(), filtered_audio.squeeze()
 
 def adaptive_smoothing(curve, target_length):
     smoother = torch.nn.AdaptiveAvgPool1d(target_length)
@@ -133,10 +133,7 @@ def statistical_response(mode='noise', num_samples=100, wav_dir=None):
         filepaths = list()
         for file in os.listdir(wav_dir):
             if file.endswith('.wav'):
-                wav_path = os.path.join(wav_dir, file)
-                audio, _ = load_wav(wav_path)
-                if audio.shape[-1] > BINS:
-                    filepaths.append(os.path.join(wav_dir, file))
+                filepaths.append(os.path.join(wav_dir, file))
         if num_samples is not None:
             num_samples = min(num_samples, len(filepaths))
         else:
@@ -150,15 +147,14 @@ def statistical_response(mode='noise', num_samples=100, wav_dir=None):
                 audio_path = filepaths[idx]
 
             audio, filtered_audio = load_and_filter(audio_path)
-
             original_spectrum_avg = record_spectrum_avg(original_spectrum_avg, audio, idx)
             filtered_spectrum_avg = record_spectrum_avg(filtered_spectrum_avg, filtered_audio, idx)
-
+            
             pbar.update(1)
 
     pointwise_gains = filtered_spectrum_avg / original_spectrum_avg
 
-    plot_response_curves([original_spectrum_avg, filtered_spectrum_avg])
+    #plot_response_curves([original_spectrum_avg, filtered_spectrum_avg])
     plot_response_curves([pointwise_gains])
     return pointwise_gains
 
@@ -200,9 +196,9 @@ if __name__ == '__main__':
                             if `noise`, generates Gaussian noise as measuring signals.\n\
                             if `wav` load .wav files from specified directory as measuring signals',
                         required=False)
-    parser.add_argument('-wd', '--wav_dir', type=str, default=None,
+    parser.add_argument('-wd', '--wav_dir', type=str, default='E:\Mpop600Reprocess\Mpop600-Resegment\ResegAudioDir_2_30',
                         required=False, help='specifies where the .wav files are located if mode==`statistical` and --stat_mode==wav')
-    parser.add_argument('-n', '--num_samples', type=int, default=100,
+    parser.add_argument('-n', '--num_samples', type=int, default=500,
                         required=False, help='if mode==`statistical`, the measuring process will be performed num_samples times.\n\
                         if --stat_mode==`wav`, the process will be performed min(num_samples, num_wavs_loaded) times')
 
