@@ -21,8 +21,11 @@ Available in `requirements.txt`
 - Since the original PCS (spectral PCS) works on log-1-p spectrograms, the nonlinearity cannot be reproduced directly with LTI FIR filters; therefore, `python PCS_coeffs_generate.py` provides two additional statistical filter design methods to approximate the behavior of spectral PCS:
   - `python PCS_coeffs_generate.py --mode='statistical' --stat_mode='gaussian'` measures and approximate spectral PCS's equivalent LTI impulse response with Gaussian signals of varying standard deviations.
   - `python PCS_coeffs_generate.py --mode='statistical' --stat_mode='wav' --wav_dir='*'` measures and approximate spectral PCS's equivalent LTI impulse response with the .wav files you placed in `wav_dir`.
-2. Filtering:
-- `python test_PCS_wave.py` performs PCS with the FIR filter coefficients derived by `PCS_coeffs_generate.py` and outputs filtered audio.
+2. FIR Filtering with wave-PCS:
+- `python test_PCS_wave.py` performs wave-PCS with the FIR filter coefficients derived by `PCS_coeffs_generate.py` and outputs filtered audio.
+
+3. Quick comparison to spectral PCS:
+- `python test_PCS_spectral.py` performs spectral PCS with [official repo](https://github.com/RoyChao19477/PCS)'s PCS functions. This snippet is meant for comparing how the FIR wave-PCS's result compares to the original spectral PCS.
 
 ## Example Results
 - Frequency response of the FIR filter coefficients derived from the default PCS settings with `GAIN_SMOOTHING = 0.2`:
