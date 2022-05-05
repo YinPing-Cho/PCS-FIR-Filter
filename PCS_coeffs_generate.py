@@ -99,15 +99,15 @@ def load_and_filter(audio_path=None):
         audio, sr = load_wav(audio_path)
     else:
         sr=22050
-        audio = generate_noise(sr*10)
+        ones = torch.ones(1)
+        audio = generate_noise(sr*10, std=torch.abs(torch.normal(mean=ones*0.2, std=ones*0.1)))
     filtered_audio = process_wav(audio)
     audio = torch.FloatTensor(audio)
     filtered_audio = torch.FloatTensor(filtered_audio)
     return audio.squeeze(), filtered_audio.squeeze()
 
 def adaptive_smoothing(curve, target_length):
-    smoother = torch.nn.AdaptiveAvgPool1d(target_length)
-    smoothed = smoother(curve.view(1,1,curve.size(-1)))
+    smoothed = torch.nn.functional.upsample(curve.view(1,1,-1), target_length, mode='linear')
     return smoothed.squeeze()
 
 def moving_avg_spectra(spectrum_avg, spectrum, count):
@@ -118,15 +118,15 @@ def moving_avg_spectra(spectrum_avg, spectrum, count):
     return (spectrum_avg * count + spectrum) / (count+1)
 
 def record_spectrum_avg(spectrum_avg, audio, count):
-    spectrum = onesided_spectrum(audio, dB=False)
+    spectrum = onesided_magnitude_spectrum(audio)
     spectrum_avg = moving_avg_spectra(spectrum_avg, spectrum, count)
     return spectrum_avg
 
-def statistical_response(mode='noise', num_samples=100, wav_dir=None):
+def statistical_response(mode='gaussian', num_samples=100, wav_dir=None):
     original_spectrum_avg = None
     filtered_spectrum_avg = None
 
-    if mode == 'noise':
+    if mode == 'gaussian':
         audio_path = None
     elif mode == 'wav':
         assert wav_dir is not None
@@ -141,7 +141,7 @@ def statistical_response(mode='noise', num_samples=100, wav_dir=None):
 
     with tqdm(total=num_samples) as pbar:
         for idx in range(num_samples):
-            if mode == 'noise':
+            if mode == 'gaussian':
                 audio_path = None
             elif mode == 'wav':
                 audio_path = filepaths[idx]
@@ -154,7 +154,6 @@ def statistical_response(mode='noise', num_samples=100, wav_dir=None):
 
     pointwise_gains = filtered_spectrum_avg / original_spectrum_avg
 
-    #plot_response_curves([original_spectrum_avg, filtered_spectrum_avg])
     plot_response_curves([pointwise_gains])
     return pointwise_gains
 
@@ -191,14 +190,14 @@ if __name__ == '__main__':
                         help='`statistical` or `manual`.\n\
                             `statistical` uses specified signals to measure the original spectral PCS as a LTI system to obtain gains.\n\
                             `manual` uses default gains in the original spectroal PCS.')
-    parser.add_argument('-stm', '--stat_mode', type=str, default='noise', \
-                        help='noise` or `wav`.\n `spcifies the measuring signal if mode==`statistical`.\n\
-                            if `noise`, generates Gaussian noise as measuring signals.\n\
+    parser.add_argument('-stm', '--stat_mode', type=str, default='gaussian', \
+                        help='`gaussian` or `wav`.\n `spcifies the measuring signal if mode==`statistical`.\n\
+                            if `gaussian`, generates Gaussian noise as measuring signals.\n\
                             if `wav` load .wav files from specified directory as measuring signals',
                         required=False)
-    parser.add_argument('-wd', '--wav_dir', type=str, default='E:\Mpop600Reprocess\Mpop600-Resegment\ResegAudioDir_2_30',
+    parser.add_argument('-wd', '--wav_dir', type=str, default=None,
                         required=False, help='specifies where the .wav files are located if mode==`statistical` and --stat_mode==wav')
-    parser.add_argument('-n', '--num_samples', type=int, default=500,
+    parser.add_argument('-n', '--num_samples', type=int, default=1000,
                         required=False, help='if mode==`statistical`, the measuring process will be performed num_samples times.\n\
                         if --stat_mode==`wav`, the process will be performed min(num_samples, num_wavs_loaded) times')
 
@@ -206,7 +205,7 @@ if __name__ == '__main__':
     if args.mode == 'manual':
         manual_PCS()
     elif args.mode == 'statistical':
-        assert args.stat_mode == 'noise' or args.stat_mode == 'wav', 'args.stat_mode: {}'.format(args.stat_mode)
+        assert args.stat_mode == 'gaussian' or args.stat_mode == 'wav', 'args.stat_mode: {}'.format(args.stat_mode)
         if args.stat_mode == 'wav':
             assert os.path.isdir(args.wav_dir), 'Error, is not dir; args.wav_dir: {}'.format(args.wav_dir)
 

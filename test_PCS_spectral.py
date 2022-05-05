@@ -3,6 +3,11 @@ import librosa
 import scipy
 from utils import *
 
+'''
+Functions modified from the official PCS repo: https://github.com/RoyChao19477/PCS
+Works on spectral domain, please find details here: http://arxiv.org/abs/2203.17152
+'''
+
 PCS_curve = np.ones(257)      # Perceptual Contrast Stretching
 PCS_curve[0:3] = 1
 PCS_curve[3:6] = 1.070175439
@@ -56,5 +61,5 @@ def test(audio_path=None):
     plot_before_after_spectra(audio, filtered_audio, min_max=[-60, 100])
     dump_audio_samples(filtered_audio, sampling_rate=sr, output_dir='roychao_audio_PCSed')
 
-#test(audio_path=None)
+test(audio_path=None)
 #test(audio_path='audio_original/f1_001_7.wav')

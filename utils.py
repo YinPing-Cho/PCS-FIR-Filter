@@ -8,9 +8,9 @@ import matplotlib.pyplot as plt
 def norm_audio(audio):
     return audio / np.max(audio) * 0.9
 
-def generate_noise(length):
+def generate_noise(length, std=0.1):
     ones = torch.ones(length)
-    noise = torch.normal(mean=ones*0, std=ones*0.1)
+    noise = torch.normal(mean=ones*0, std=ones*std)
     return noise
 
 def load_wav(full_path):
@@ -36,6 +36,16 @@ def onesided_spectrum(x, dB=True):
         return 20 * torch.log10(x)
     else:
         return x
+
+def onesided_magnitude_spectrum(x):
+    x = torch.fft.fft(x).abs().float()
+    x = x[:x.size(-1)//2]
+    return x
+
+def onesided_complex_spectrum(x):
+    x = torch.fft.fft(x)
+    x = x[:x.size(-1)//2]
+    return x
 
 def plot_before_after_spectra(audio_before, audio_after, min_max=None):
     audio_before = audio_before.squeeze()
