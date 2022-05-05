@@ -39,6 +39,7 @@ Available in `requirements.txt`
 <img src="https://github.com/YinPing-Cho/PCS-FIR-Filter/blob/dev/statistical/mpop600_fr.png" height="384">
 </p>
 - Spectra comparison of befer and after PCS:
+<p align="center">
 <img src="https://github.com/YinPing-Cho/PCS-FIR-Filter/blob/dev/statistical/sing_pcs_mp600.png" height="384">
 </p>
 
